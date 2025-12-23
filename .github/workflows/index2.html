@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Play Access Control</title>
+    <style>
+        /* Resetare margini si paddinguri */
+        * {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: normal;
+            height: 100vh;
+            position: relative;
+            background-color: #2d3436;
+        }
+
+        #rand-gol {
+            display: flex;
+            height: 20px;
+            width: 94%;
+            justify-content: flex-end;
+            align-items: flex-end;
+            flex-direction: row;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, #ffffff, #f32be2);
+            color: #ffffff;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.699);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.);
+            max-width: 770px;
+            max-height: 470px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            opacity: 1;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .header {
+            flex: 1;
+            width: 100%;
+            max-width: 710px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header img {
+            width: 100%;
+            height: 120%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .selected-table-message {
+            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3436;
+            text-align: right;
+            width: 94%;
+            height: 40px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        p {
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+            display: contents;
+        }
+
+        p1 {
+            margin-bottom: 5px;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        p2 {
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        p3 {
+            margin-bottom: 5px;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            align-items: center;
+            text-align: center
+        }
+
+        p4 {
+            margin-bottom: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #ffffff;
+            align-items: center;
+            text-align: center
+        }
+
+        .table-buttons {
+            display: flex;
+            color: #7de9ee;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            max-height: 221px;
+            max-width: 740px;
+            position: relative;
+        }
+
+        #table-selection {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .table-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            width: 50%;
+            max-width: 730px;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            display: inline-block;
+            padding: 5px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-btn::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+            opacity: 0.7;
+            transform: rotate(-45deg);
+            transition: opacity 0.5s ease;
+            animation: radar-scan 5s linear infinite;
+        }
+
+        @keyframes radar-scan {
+            0% {
+                top: -300%;
+            }
+
+            100% {
+                top: 170%;
+            }
+        }
+
+        .table-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .table-btn:hover::before {
+            opacity: 1;
+            animation-play-state: running;
+        }
+
+        .svg-button svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .svg-button .border {
+            stroke: #fff;
+            stroke-width: 10;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 2s ease, stroke 0.6s ease;
+        }
+
+        .svg-button:hover .border {
+            stroke-dashoffset: 0;
+            stroke: #ffcc00;
+            animation: light-glow 1.5s ease-out infinite;
+        }
+
+        @keyframes light-glow {
+            0% {
+                stroke: #fff;
+            }
+
+            50% {
+                stroke: #ffcc00;
+            }
+
+            100% {
+                stroke: #fff;
+            }
+        }
+
+        .svg-button:hover {
+            background-color: #00d9ff;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 55px;
+            padding: 10px;
+            font-size: 21px;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            background-color: #ecf0f1;
+            transition: border-color 0.3s ease;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0984e3;
+            outline: greenyellow;
+            background-color: #dfe6e9;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+            font-size: 21px;
+            font-weight: bold;
+            color: white;
+            background-color: #0ab443;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 5px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0ab443;
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"]:active {
+            background-color: #0ab443;
+            transform: translateY(0);
+        }
+
+        button[type="submit"]:disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 14px;
+            }
+
+            .table-btn {
+                width: 100%;
+                height: 100%;
+            }
+
+            .table-btn img {
+                height: 40vh;
+            }
+
+            input[type="password"] {
+                font-size: 16px;
+                padding: 10px;
+            }
+
+            button[type="submit"] {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+
+        #backButton {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+            font-size: 21px;
+            font-weight: bold;
+            color: white;
+            background-color: #0897bb;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #backButton:hover {
+            background-color: #25c5ec;
+            transform: translateY(-2px);
+        }
+
+        #backButton:active {
+            background-color: #0897bb;
+            transform: translateY(0);
+        }
+
+        .popup.success {
+            position: absolute;
+            top: 27%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px 80px;
+            background-color: #0ab443;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 216px;
+        }
+
+        .popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup.error {
+            background-color: #e74c3c;
+            color: white;
+            position: absolute;
+            top: 27%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px 80px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(238, 4, 4, 0.767);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 216PX;
+        }
+
+        .popup.show {
+            opacity: 1;
+            visibility: visible;
+            width: 90%;
+            font-size: x-large;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+        }
+
+        .counter {
+            position: absolute;
+            top: 110px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            font-size: 22px;
+            z-index: 10;
+            height: 105px;
+            width: 224px;
+            align-content: center;
+        }
+
+        #access-code {
+            width: 100%;
+            text-align: center;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.8s forwards ease-in-out;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s forwards ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .transition {
+            transition: all 0.3s ease;
+        }
+
+        .otp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .otp-inputs input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .clock {
+            margin-bottom: 8px;
+            font-size: 24px;
+            color: #000;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .keyboard {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 770px;
+            height: 80px;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(3, auto);
+            background-color: #2d3436;
+            padding: 10px;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .key {
+            background-color: #2d3436;
+            height: 60px;
+            color: white;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .key:active {
+            background-color: #74b9ff;
+        }
+
+        .key:hover {
+            background-color: #74b9ff;
+        }
+
+        .popup.loading {
+            position: absolute;
+            top: 27%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px 80px;
+            background-color: #ffcc00;
+            color: black;
+            font-size: 32px;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 216px;
+        }
+
+        .popup.loading.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: black;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .popup-upcoming {
+            position: absolute;
+            transform: translateX(-50%) translateY(-10px) scale(0.7);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 200px;
+            min-width: 180px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .popup-upcoming.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px) scale(1);
+        }
+
+        .popup-upcoming.hidden {
+            display: none;
+        }
+
+        .upcoming-icon {
+            font-size: 35px;
+            margin-bottom: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .upcoming-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upcoming-message {
+            font-size: 13px;
+            color: white;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .upcoming-message .table-name {
+            font-weight: bold;
+            font-size: 15px;
+            color: #FFD700;
+            display: block;
+            margin: 5px 0;
+        }
+
+        .upcoming-message .minutes {
+            font-weight: bold;
+            font-size: 22px;
+            color: #FFD700;
+        }
+
+        .popup-upcoming::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #764ba2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-image"></div>
+    <div class="container">
+        <audio id="radio-player" loop muted>
+            <source src="https://stream.vanillaradio.com:8003/live" type="audio/mpeg">
+            Browser-ul tău nu suportă elementul audio.
+        </audio>
+
+        <div class="content">
+            <div class="header">
+                <img src="static/images/header_logo.png" alt="Logo" class="logo">
+            </div>
+        </div>
+        <p></p>
+        <div id="numeric-keyboard" class="keyboard hidden">
+            <button class=" key" onclick="insertKey(1)">1</button>
+            <button class="key" onclick="insertKey(2)">2</button>
+            <button class="key" onclick="insertKey(3)">3</button>
+            <button class="key" onclick="insertKey(4)">4</button>
+            <button class="key" onclick="insertKey(5)">5</button>
+            <button class="key" onclick="insertKey(6)">6</button>
+            <button class="key" onclick="insertKey(7)">7</button>
+            <button class="key" onclick="insertKey(8)">8</button>
+            <button class="key" onclick="insertKey(9)">9</button>
+            <button class="key" onclick="backspace()">Șterge</button>
+            <button class="key" onclick="submitCode()">OK</button>
+        </div>
+        <div id="rand-gol">
+            <div id="clock" class="clock"></div>
+        </div>
+        <div id="selectedTableMessage" class="selected-table-message hidden">
+            <p id="tableMessageText">Masa selectată: </p><br>
+        </div>
+
+        <div id="access-code" class="hidden">
+            <input type="text" id="code" placeholder="Introdu codul de acces format din 6 cifre" maxlength="6"
+                inputmode="numeric" required onkeydown="return isNumberKey(event)"
+                oninput="validateAndToggleButton(this)" autocomplete="off">
+            <button type="submit" id="submitBtn" class="effect-button" onclick="verifyAccessCode()"
+                disabled>Submit</button>
+            <button id="backButton" onclick="goBack()" class="effect-button">Înapoi</button>
+        </div>
+
+        <div id="table-selection">
+            <div class="table-buttons">
+                <button class="table-btn svg-button" data-table="nr.1" onclick="selectTable('nr.1')">
+                    <svg>
+                        <rect class="border" x="0" y="0" fill="none" width="100%" height="100%"></rect>
+                    </svg>
+                    <div id="counter1" class="counter hidden"></div>
+                    <div id="ocupat1" class="counter hidden">INDISPONIBIL</div>
+                    <img src="static/images/table1.png" alt="Masa 1">
+                </button>
+                <button class="table-btn svg-button" data-table="Ambele" onclick="selectTable('Ambele')">
+                    <svg>
+                        <rect class="border" x="0" y="0" fill="none" width="100%" height="100%"></rect>
+                    </svg>
+                    <div id="counter3" class="counter hidden"></div>
+                    <div id="ocupat3" class="counter hidden">INDISPONIBIL</div>
+                    <img src="static/images/table3.png" alt="Ambele">
+                </button>
+                <button class="table-btn svg-button" data-table="nr.2" onclick="selectTable('nr.2')">
+                    <svg>
+                        <rect class="border" x="0" y="0" fill="none" width="100%" height="100%"></rect>
+                    </svg>
+                    <div id="counter2" class="counter hidden"></div>
+                    <div id="ocupat2" class="counter hidden">INDISPONIBIL</div>
+                    <img src="static/images/table2.png" alt="Masa 2">
+                </button>
+
+                <div id="upcomingPopup1" class="popup-upcoming hidden" data-for="nr.1">
+                    <div class="upcoming-icon">⏰</div>
+                    <div class="upcoming-title">REZERVARE ÎN CURÂND</div>
+                    <div id="upcomingMessage1" class="upcoming-message"></div>
+                </div>
+                <div id="upcomingPopup2" class="popup-upcoming hidden" data-for="nr.2">
+                    <div class="upcoming-icon">⏰</div>
+                    <div class="upcoming-title">REZERVARE ÎN CURÂND</div>
+                    <div id="upcomingMessage2" class="upcoming-message"></div>
+                </div>
+                <div id="upcomingPopup3" class="popup-upcoming hidden" data-for="Ambele">
+                    <div class="upcoming-icon">⏰</div>
+                    <div class="upcoming-title">REZERVARE ÎN CURÂND</div>
+                    <div id="upcomingMessage3" class="upcoming-message"></div>
+                </div>
+            </div>
+        </div>
+        <div id="loadingMessage" class="popup loading hidden">
+            <div class="spinner"></div>
+            <p3>Se procesează...</p3>
+        </div>
+        <div id="successPopup" class="popup success hidden">
+            <p1>ACCES PERMIS!</p1>
+        </div>
+        <div id="errorPopup" class="popup error hidden">
+            <p3>PIN INCORECT SAU INACTIV</p3>
+            <p2><br>VERIFICĂ SMS / EMAIL<BR>PENTRU DETALIILE REZERVĂRII TALE</p2><BR>
+            <P4>CODUL ESTE VALABIL DOAR ÎN PERIOADA ALOCATĂ REZERVĂRII ȘI LA MASA ALEASĂ ÎN TIMPUL REZERVĂRII</P4>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀🚀🚀 SCRIPT PORNIT! 🚀🚀🚀');
+
+        let selectedTable = '';
+        let table1Active = false;
+        let table2Active = false;
+        let lastUpcomingAlert = null;
+        let upcomingTimers = {};
+
+        const pollingInterval = setInterval(async () => {
+            try {
+                console.log('🔄 Polling: Fac request la /api/tables/state...');
+                const response = await fetch('/api/tables/state');
+                console.log('📡 Polling: Response primit:', response);
+
+                const data = await response.json();
+                console.log('🔄 Polling: Date primite de la server:', data);
+
+                if (data.success) {
+                    syncTableStateFromServer(data.tables);
+                }
+            } catch (error) {
+                console.error('❌ Eroare la sincronizarea cu serverul:', error);
+            }
+        }, 3000);
+
+        const upcomingPollingInterval = setInterval(async () => {
+            try {
+                console.log('⏰ Verificare rezervări în curând...');
+                const response = await fetch('/api/tables/upcoming');
+                const data = await response.json();
+
+                if (data.success && data.hasUpcoming) {
+                    console.log('🔔 Rezervări în curând:', data.alerts);
+
+                    const alertKey = JSON.stringify(data.alerts);
+                    if (alertKey !== lastUpcomingAlert) {
+                        lastUpcomingAlert = alertKey;
+                        showUpcomingAlert(data.alerts);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Eroare la verificarea rezervărilor:', error);
+            }
+        }, 30000);
+
+        setInterval(() => {
+            checkIfUnavailable('ocupat1', 1, 'counter1');
+            checkIfUnavailable('ocupat2', 3, 'counter2');
+            checkIfUnavailable('ocupat3', 2, 'counter3');
+        }, 1000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('numeric-keyboard').classList.add('hidden');
+        });
+
+        document.getElementById('code').addEventListener('focus', () => {
+            document.getElementById('numeric-keyboard').classList.remove('hidden');
+        });
+
+        document.addEventListener('click', (event) => {
+            const keyboard = document.getElementById('numeric-keyboard');
+            const codeInput = document.getElementById('code');
+
+            if (!keyboard.contains(event.target) && event.target !== codeInput) {
+                keyboard.classList.add('hidden');
+            }
+        });
+
+        restoreTableState();
+
+        function insertKey(key) {
+            const codeInput = document.getElementById('code');
+            if (codeInput.value.length < 6) {
+                codeInput.value += key;
+            }
+            validateAndToggleButton(codeInput);
+        }
+
+        function backspace() {
+            const codeInput = document.getElementById('code');
+            codeInput.value = codeInput.value.slice(0, -1);
+            validateAndToggleButton(codeInput);
+        }
+
+        function submitCode() {
+            if (document.getElementById('code').value.length === 6) {
+                document.getElementById('numeric-keyboard').classList.add('hidden');
+                verifyAccessCode();
+            }
+        }
+
+        function selectTable(table) {
+            selectedTable = table;
+            document.getElementById('numeric-keyboard').classList.remove('hidden');
+            document.getElementById('table-selection').classList.add('fade-out');
+            document.getElementById('table-selection').style.display = 'none';
+            document.getElementById('tableMessageText').innerText = "Masa selectată: " + table;
+            document.getElementById('selectedTableMessage').classList.remove('hidden');
+            document.getElementById('access-code').classList.remove('hidden');
+            document.querySelector('p').style.display = 'none';
+            setTimeout(function () {
+                document.getElementById('table-selection').style.display = 'none';
+                document.getElementById('access-code').classList.remove('hidden');
+                document.getElementById('access-code').classList.add('fade-in');
+            }, 500);
+        }
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((charCode >= 48 && charCode <= 57) || (charCode >= 96 && charCode <= 105) || charCode === 8 || charCode === 9 || charCode === 13) {
+                return true;
+            }
+            evt.preventDefault();
+            return false;
+        }
+
+        function validateAndToggleButton(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const submitBtn = document.getElementById('submitBtn');
+            if (input.value.length === 6) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function validateInput(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        async function verifyAccessCode() {
+            var accessCode = document.getElementById('code').value;
+            var webhookUrl = 'https://script.google.com/macros/s/AKfycbzQDaCDMHzHbzHaa4fbw4RHcf2I-cZIqFKbLC9yuMygVaI1IlJ4XPWLbv0vVxHkIXwjxw/exec';
+
+            var body = new URLSearchParams({
+                enteredCode: accessCode,
+                selectedTable: selectedTable
+            });
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('loadingMessage').classList.remove('hidden');
+            document.getElementById('loadingMessage').classList.add('show');
+
+            try {
+                let response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: "cors",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: body,
+                });
+
+                if (!response.ok) {
+                    throw new Error("Eroare la conectarea cu serverul");
+                }
+
+                let result = await response.text();
+                console.log("Răspuns primit de la server:", result);
+
+                result = result.trim();
+                var parts = result.split(',');
+
+                var status = parts[0];
+                if (status === "1") {
+                    let timeRemainingMs = parseInt(parts[1], 10);
+
+                    startCountdown(timeRemaining
